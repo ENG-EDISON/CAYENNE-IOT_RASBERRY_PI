@@ -33,7 +33,7 @@ def send_sms(message):
         message = client.messages.create(
                               body=message1,
                               from_='+15205100988',
-                              to='+254772575566'
+                              to='#phone number#'
                           )
 
 while True:
