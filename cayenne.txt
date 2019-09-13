@@ -1,0 +1,36 @@
+import paho.mqtt.client as mqtt
+import time
+import sys
+time.sleep(30) 
+username = "e1a13c20-d460-11e9-b49d-5f4b6757b1bf"
+password = "f023df1698ae1358464679ce4ed9b6729fc7ed72"
+clientid = "affe2f70-d528-11e9-8221-599f77add412"
+mqttc = mqtt.Client(client_id=clientid)
+mqttc.username_pw_set(username, password=password)
+mqttc.connect("mqtt.mydevices.com", port=1883, keepalive=60)
+mqttc.loop_start()
+voltage = "v1/" + username + "/things/" + clientid + "/data/1"
+def voltage_serial_read():
+	ser = serial.Serial('/dev/ttyACM0',9600)
+	read_serial=ser.readline()
+	read_serial=float(read_serial)
+	print (read_serial)
+	return(read_serial)
+
+while True:
+
+    try:
+
+        volatage1= voltage_serial_read();  
+       
+        if  volatage1 is not None:
+
+             volatage1 = "temp,c=" + str( volatage1)
+
+            mqttc.publish( volatage, payload= volatage1, retain=True)
+
+    except (EOFError, SystemExit, KeyboardInterrupt):
+
+        mqttc.disconnect()
+
+        sys.exit()

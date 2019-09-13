@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+import serial
+import sys
+import urllib.request
+from time import sleep
+from urllib.request import urlopen, Request
+import json,time
+import RPi.GPIO as GPIO
+from twilio.rest import Client
+GPIO.setmode(GPIO.BOARD)
+PIN_TRIGGER =38
+PIN_ECHO = 40
+GPIO.setwarnings(False);
+GPIO.setup(PIN_TRIGGER, GPIO.OUT)
+GPIO.setup(PIN_ECHO, GPIO.IN)
+GPIO.output(PIN_TRIGGER, GPIO.LOW)
+# Enter Your API key here
+myAPI = 'VWEWVDMRJKEOG9JV'
+# URL where we will send the data, Don't change it
+baseURL = 'https://api.thingspeak.com/update?api_key=%s' % myAPI
+def voltage_measure():
+        ser = serial.Serial('/dev/ttyACM0',9600)
+        read_serial=ser.readline()
+        read_serial=float(read_serial)
+        print (read_serial)
+        return(read_serial)
+
+def send_sms(message):
+        message1=str(message)
+        account_sid = 'AC99beb4d7fc91074c2fe818a3b22efa25'
+        auth_token = '848f758f5802d9c65d554c15295a14c8'
+        client = Client(account_sid, auth_token)
+        message = client.messages.create(
+                              body=message1,
+                              from_='+15205100988',
+                              to='+254772575566'
+                          )
+
+while True:
+    time.sleep(1);
+    voltage_measured=voltage_measure();
+    conn = urllib.request.urlopen(baseURL + '&field1=%s' % (voltage_measured))
+    #print(conn.read())
+    conn.close()
+    if voltage_measured<=200:
+        k='LOW VOLTAGE AT KABIRU-INI SHOW GROUND'
+        send_sms(k);
+    if voltage_measured>=250:
+        text='OVER VOLTAGE AT KABIRU-INI SHOW GROUND'
+        send_sms(text)
+    request = Request('https://api.thingspeak.com/talkbacks/34219/commands/execute?api_key=1EWYOY2VIOI43VGJ')
+    response = urllib.request.urlopen(request)
+    command = response.read()
+    command = command.decode()
+    command = command
+    print(command)
+    if command == 'TURN_ON':
+        GPIO.output(40,1)
+    if command == 'TURN_OFF':
+        GPIO.output(40,0)
+        time.sleep(1)
+
