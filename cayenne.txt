@@ -2,9 +2,9 @@ import paho.mqtt.client as mqtt
 import time
 import sys
 time.sleep(30) 
-username = "e1a13c20-d460-11e9-b49d-5f4b6757b1bf"
-password = "f023df1698ae1358464679ce4ed9b6729fc7ed72"
-clientid = "affe2f70-d528-11e9-8221-599f77add412"
+username = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+password = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+clientid = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 mqttc = mqtt.Client(client_id=clientid)
 mqttc.username_pw_set(username, password=password)
 mqttc.connect("mqtt.mydevices.com", port=1883, keepalive=60)
